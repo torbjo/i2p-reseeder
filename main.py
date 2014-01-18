@@ -6,11 +6,6 @@ import netdb
 #from netdb import load as load_netdb
 from pprint import pprint as pp
 
-#NETDB = '/home/torkel/tmp/netDb/'
-#RouterList = load_netdb (NETDB)
-#print 'Loaded info for %d routers' % len(RouterList)
-#pp(RouterList)
-
 # We need some tools to ease WSGI development.
 from werkzeug.wrappers import Request, Response
 from werkzeug.routing import Map, Rule
@@ -20,6 +15,22 @@ from werkzeug.wsgi import wrap_file
 
 class Reseeder (object):
     ''' I2P reseeder WSGI application '''
+
+    # Number of routers to return
+    ROUTER_COUNT = 25
+
+    # NetDB database. Each entry is a tuple of (prefix, filename)
+    routers = []
+
+    # Want to return same set of routers to each host, to make more
+    # resilient against enumeration attacks.
+    # key = ip-addr
+    # val = list of router ids (rid)  [router = self.routers[rid]]
+    # @todo should flush this cache at regular intervals.
+    #       - can add ttl to each entry, then run cleanup regularly
+    #       - or just restart the whole app every nth hours
+    HostCache = dict()
+
 
     #URLMAP = Map
     urlmap = Map ((
@@ -49,18 +60,33 @@ class Reseeder (object):
     # Render index page listing all files
     # @todo list of router id to use?
     # @todo faster to use cStringIO to buffer output?
-    def render (self):
+    def _render (self):
         yield '<body><ul>'
-        for tp in sample (self.routers, 25):
+        for tp in sample (self.routers, self.ROUTER_COUNT):
             name = tp[1]
             url = '/'.join(tp)
             yield '<li><a href="/netDb/%s">%s</a></li>' % (url, name)
         yield '</ul></body>'
 
 
-    def handle_index (self, request):
-        return Response (self.render(), mimetype='text/html')
-        #return Response('Hello <b>bold</b> world', mimetype='text/html')
+    def render (self, router_ids):
+        yield '<body><ul>'
+        for rid in router_ids:
+            tp = self.routers[rid]
+            name = tp[1]
+            url = '/'.join(tp)
+            yield '<li><a href="/netDb/%s">%s</a></li>' % (url, name)
+        yield '</ul></body>'
+
+
+    def handle_index (self, req):
+        addr = req.remote_addr
+        if not addr in self.HostCache:
+            rids = sample (xrange(len(self.routers)), self.ROUTER_COUNT)
+            self.HostCache[addr] = rids
+        else:
+            rids = self.HostCache[addr]
+        return Response (self.render(rids), mimetype='text/html')
 
 
 
