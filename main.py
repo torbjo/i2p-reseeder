@@ -15,6 +15,7 @@ from pprint import pprint as pp
 from werkzeug.wrappers import Request, Response
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, NotFound
+from werkzeug.wsgi import wrap_file
 
 
 class Reseeder (object):
@@ -35,12 +36,14 @@ class Reseeder (object):
 
     ## Handlers
 
-    # @todo ETag
+    # @todo ETag?
     def handle_get_file (self, request, prefix, name):
         filename = os.path.join (self.netdb_path, prefix, name)
-        return Response (open(filename),
-                         content_type = 'application/octet-stream',
-                         direct_passthrough = True)
+        res = Response (wrap_file (request.environ, open(filename)),
+                        content_type = 'application/octet-stream',
+                        direct_passthrough = True)
+        res.headers.add ('Content-Length', os.path.getsize (filename))
+        return res
 
 
     # Render index page listing all files

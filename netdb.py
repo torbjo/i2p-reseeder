@@ -1,12 +1,11 @@
 r'''
 
-/home/torkel/tmp/netDb/rx
-    routerInfo-xWq3~CLjsn3IAFOAxWmDsPw4j0ADZj7ohVr9YewNWbA=.dat
-
 http://docs.i2p2.de/javadoc/net/i2p/data/Base64.html
 I2P uses a modified Base64 encoding:
     +   =>  -
     /   =>  ~
+
+netDb/rx/routerInfo-xWq3~CLjsn3IAFOAxWmDsPw4j0ADZj7ohVr9YewNWbA=.dat
 
 /some/path/to/netDb/rx
                     ^
@@ -31,8 +30,13 @@ def load (netdb_path):
         #print 'Loading %d files from %s' % (len(filenames), dirpath)
         for filename in filenames:
             base = os.path.basename (dirpath)
-            b64str = base[0] + filename[11:-4]
+            # Add prefix, then strip 'routerInfo-' and '.dat' to get
+            # router hash as base64 encoded string.
+            #b64str = base[0] + filename[11:-4]
             rlist.append ((base, filename))
+
+            #size = os.path.getsize (os.path.join (dirpath, filename))
+            #rlist.append ((base, filename, size))
             #rlist.append (os.path.join(base, filename))
             #rlist.append (os.path.join(dirpath, filename))
 
