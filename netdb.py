@@ -15,6 +15,9 @@ netDb/rx/routerInfo-xWq3~CLjsn3IAFOAxWmDsPw4j0ADZj7ohVr9YewNWbA=.dat
 
 import os
 
+def on_error (ex):
+    raise ex
+
 
 def load (netdb_path):
     """Load all router info from neteDb"""
@@ -25,7 +28,7 @@ def load (netdb_path):
     # @todo onerror
     # os.walk (path, topdown=True, onerror=None, followlinks=False)
 
-    for dirpath, dirnames, filenames in os.walk (netdb_path):
+    for dirpath, dirnames, filenames in os.walk (netdb_path, onerror=on_error):
         #if not filenames: continue
         #print 'Loading %d files from %s' % (len(filenames), dirpath)
         for filename in filenames:

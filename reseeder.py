@@ -63,6 +63,7 @@ class Reseeder (object):
     def __init__ (self, netdb_path):
         self.netdb_path = netdb_path
         self.routers = netdb.load (netdb_path)
+        print 'Loaded %d routers from: %s' % (len(self.routers), netdb_path)
 
 
     ## Handlers
@@ -93,7 +94,8 @@ class Reseeder (object):
         self.expire_host_cache()
         addr = req.remote_addr
         if not addr in self.HostCache:
-            rids = random_sample (xrange(len(self.routers)), self.ROUTER_COUNT)
+            sz = len(self.routers)
+            rids = random_sample (xrange(sz), min(sz, self.ROUTER_COUNT))
             self.HostCache[addr] = rids
         else:
             rids = self.HostCache[addr]
