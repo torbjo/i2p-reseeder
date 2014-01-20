@@ -31,7 +31,7 @@ class Reseeder (object):
     ''' I2P reseeder WSGI application '''
 
     # Number of routers to return. Please do *not* change this!
-    ROUTER_COUNT = 50
+    ROUTER_COUNT = 60
 
     # NetDB database. Each entry is a tuple of (prefix, filename)
     routers = []
@@ -53,9 +53,7 @@ class Reseeder (object):
     # Maps URLs to handler methods.
     urlmap = Map ((
         Rule ('/',                          endpoint = 'index'),
-        Rule ('/netDb/<prefix>/<name>',     endpoint = 'get-file'),
-        #Rule ('/netDb/<filename>',         endpoint = 'get-file'),
-        #Rule ('/routerInfo-<b64hash>.dat', endpoint = 'get-file'),
+        Rule ('/routerInfo-<b64hash>.dat',  endpoint = 'get-file'),
     ))
 
 
@@ -69,7 +67,9 @@ class Reseeder (object):
     ## Handlers
 
     # @todo ETag?
-    def handle_get_file (self, request, prefix, name):
+    def handle_get_file (self, request, b64hash):
+        name = 'routerInfo-' + b64hash + '.dat'
+        prefix = 'r' + b64hash[0]
         filename = os.path.join (self.netdb_path, prefix, name)
         res = Response (wrap_file (request.environ, open(filename)),
                         content_type = 'application/octet-stream',
@@ -81,13 +81,18 @@ class Reseeder (object):
     # Render index page listing all files
     # @todo faster to use cStringIO to buffer output?
     def render (self, router_ids):
-        yield '<body><ul>'
+        yield '<html><head><title>NetDB</title></head><body><ul>'
         for rid in router_ids:
+            # new
+            #b64hash = self.routers[rid]
+            #name = 'routerInfo-' + b64hash + '.dat'
             tp = self.routers[rid]
-            url = '/'.join(tp)
+            url = tp[1]
+            #url = '/'.join(tp)
             name = tp[1]
-            yield '<li><a href="/netDb/%s">%s</a></li>' % (url, name)
-        yield '</ul></body>'
+            yield '<li><a href="%s">%s</a></li>' % (url, name)
+            #yield '<li><a href="/netDb/%s">%s</a></li>' % (url, name)
+        yield '</ul></body></html>'
 
 
     def handle_index (self, req):

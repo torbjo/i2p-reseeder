@@ -17,6 +17,10 @@ import os
 
 def on_error (ex):
     raise ex
+    # @todo ingore access denied?
+    # IOError: [Errno 13] Permission denied:
+    # Note: new routerInfo files created by I2P has wrong permissions
+    # workaround: i2p umask?, setfacl?
 
 
 def load (netdb_path):
