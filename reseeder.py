@@ -7,9 +7,14 @@ implementation.
 
 TODO Link to protocol specifications or write it here.
 
+TODO: Need way to reload netDb database from disk.
+      1) do at regular interval
+      2) monitor directory tree and reload when changed
+
 '''
 
 import os
+import time
 from random import sample as random_sample
 
 import netdb
@@ -18,15 +23,15 @@ import netdb
 # We need some tools to ease WSGI development.
 from werkzeug.wrappers import Request, Response
 from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException, NotFound
+from werkzeug.exceptions import HTTPException
 from werkzeug.wsgi import wrap_file
 
 
 class Reseeder (object):
     ''' I2P reseeder WSGI application '''
 
-    # Number of routers to return
-    ROUTER_COUNT = 25
+    # Number of routers to return. Please do *not* change this!
+    ROUTER_COUNT = 50
 
     # NetDB database. Each entry is a tuple of (prefix, filename)
     routers = []
@@ -40,8 +45,12 @@ class Reseeder (object):
     #       - or just restart the whole app every nth hours
     HostCache = dict()
 
+    # How often to clear HostCache (in seconds)
+    cache_clear_interval = 24*3600
+    # Unix timestamp of when to clear cache.
+    cache_clear_ts = 0
 
-    #URLMAP = Map
+    # Maps URLs to handler methods.
     urlmap = Map ((
         Rule ('/',                          endpoint = 'index'),
         Rule ('/netDb/<prefix>/<name>',     endpoint = 'get-file'),
@@ -49,6 +58,8 @@ class Reseeder (object):
         #Rule ('/routerInfo-<b64hash>.dat', endpoint = 'get-file'),
     ))
 
+
+    # Constructor
     def __init__ (self, netdb_path):
         self.netdb_path = netdb_path
         self.routers = netdb.load (netdb_path)
@@ -79,6 +90,7 @@ class Reseeder (object):
 
 
     def handle_index (self, req):
+        self.expire_host_cache()
         addr = req.remote_addr
         if not addr in self.HostCache:
             rids = random_sample (xrange(len(self.routers)), self.ROUTER_COUNT)
@@ -86,6 +98,16 @@ class Reseeder (object):
         else:
             rids = self.HostCache[addr]
         return Response (self.render(rids), mimetype='text/html')
+
+
+    # Clear the host cache every 24 hours.
+    # Note: It might be better to store a TTL on each entry and remove
+    # entries based on that. This is probably faster and simpler.
+    def expire_host_cache (self):
+        if time.time() < self.cache_clear_ts: return
+        print 'expire-host-cache: removed %d entries.' % len(self.HostCache)
+        self.HostCache.clear()
+        self.cache_clear_ts = time.time() + self.cache_clear_interval
 
 
 
@@ -103,7 +125,7 @@ class Reseeder (object):
             print 'ERROR:', type(e)
             return e
 
-    # Note: This can be overriden by middleware
+    # Note: This can be overridden by middleware
     def wsgi (self, environ, start_response):
         return self.dispatch (Request(environ)) (environ, start_response)
 

@@ -1,12 +1,10 @@
-
-.PHONY: all
+.PHONY: test runserver
 
 test:
-	GET http://localhost:8080/ > /dev/null
-
-all:
-	firefox http://localhost:8080/
-	#x-www-browser http://localhost:8080/
+	GET http://localhost:8080/
+#	GET http://localhost:8080/ > /dev/null
+#	firefox http://localhost:8080/
+#	x-www-browser http://localhost:8080/
 
 
 runserver:

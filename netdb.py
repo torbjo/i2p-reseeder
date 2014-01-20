@@ -35,6 +35,10 @@ def load (netdb_path):
             #b64str = base[0] + filename[11:-4]
             rlist.append ((base, filename))
 
+            # ('rG', 'routerInfo-GPPJQ-5dtsa~OZUWxxN8Ln~cYULRl7t50FMX1gK37GM=.dat')
+            # @todo no need to store base since it's always equal to
+            #       base = 'r' + filename[11]
+
             #size = os.path.getsize (os.path.join (dirpath, filename))
             #rlist.append ((base, filename, size))
             #rlist.append (os.path.join(base, filename))

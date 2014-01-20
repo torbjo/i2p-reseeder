@@ -1,6 +1,14 @@
-import v1
+r'''
 
-Reseeder = v1.Reseeder
+Just for testing while developing.
+
+Run this file to get a test webserver running on: http://localhost:8080
+
+$ python main.py /path/to/netDb
+
+'''
+
+from reseder import Reseeder
 
 
 if __name__ == '__main__':
