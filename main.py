@@ -8,7 +8,7 @@ $ python main.py /path/to/netDb
 
 '''
 
-from reseder import Reseeder
+from reseeder import Reseeder
 
 
 if __name__ == '__main__':
