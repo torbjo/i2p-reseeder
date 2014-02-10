@@ -15,6 +15,7 @@ TODO: Need way to reload netDb database from disk.
 
 import os
 import time
+import errno
 from random import sample as random_sample
 
 import netdb
@@ -23,7 +24,7 @@ import netdb
 # We need some tools to ease WSGI development.
 from werkzeug.wrappers import Request, Response
 from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException, NotFound
 from werkzeug.wsgi import wrap_file
 
 
@@ -71,11 +72,15 @@ class Reseeder (object):
         name = 'routerInfo-' + b64hash + '.dat'
         prefix = 'r' + b64hash[0]
         filename = os.path.join (self.netdb_path, prefix, name)
-        res = Response (wrap_file (request.environ, open(filename)),
-                        content_type = 'application/octet-stream',
-                        direct_passthrough = True)
-        res.headers.add ('Content-Length', os.path.getsize (filename))
-        return res
+        try:
+            res = Response (wrap_file (request.environ, open(filename, 'rb')),
+                            content_type = 'application/octet-stream',
+                            direct_passthrough = True)
+            res.headers.add ('Content-Length', os.path.getsize (filename))
+            return res
+        except IOError, err:
+            if err.errno not in (errno.ENOENT,): raise
+            raise NotFound()
 
 
     # Render index page listing all files
@@ -129,7 +134,8 @@ class Reseeder (object):
             if func: return func (request, **values)
             else: return Response ('No handler for: ' + endpoint, status=500)
         except HTTPException, e:
-            print 'ERROR:', type(e)
+	    # @todo if not httexec print it
+            #print 'ERROR:', type(e)
             return e
 
     # Note: This can be overridden by middleware
