@@ -133,10 +133,10 @@ class Reseeder (object):
             func = getattr (self, 'handle_' + endpoint.replace('-', '_'), None)
             if func: return func (request, **values)
             else: return Response ('No handler for: ' + endpoint, status=500)
-        except HTTPException, e:
-	    # @todo if not httexec print it
-            #print 'ERROR:', type(e)
-            return e
+        except NotFound, ex: return ex
+        except HTTPException, ex:
+            print >>self.err, 'ERROR:', type(ex)
+            return ex
 
     # Note: This can be overridden by middleware
     def wsgi (self, environ, start_response):
@@ -144,4 +144,5 @@ class Reseeder (object):
 
     # WSGI entry point
     def __call__ (self, environ, start_response):
+        self.err = err = environ['wsgi.errors']
         return self.wsgi (environ, start_response)
