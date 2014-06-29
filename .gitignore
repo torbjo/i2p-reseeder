@@ -3,4 +3,5 @@
 *.swp
 
 /logs
-/netDb
+/netDb/*
+/su3netDb/*
