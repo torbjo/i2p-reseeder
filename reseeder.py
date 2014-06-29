@@ -26,7 +26,7 @@ from werkzeug.wrappers import Request, Response
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, NotFound
 from werkzeug.wsgi import wrap_file
-
+import binascii,hashlib
 
 class Reseeder (object):
     ''' I2P reseeder WSGI application '''
@@ -54,6 +54,7 @@ class Reseeder (object):
     # Maps URLs to handler methods.
     urlmap = Map ((
         Rule ('/',                          endpoint = 'index'),
+        Rule ('/i2pseeds.su3',              endpoint = 'get-su3'),
         Rule ('/routerInfo-<b64hash>.dat',  endpoint = 'get-file'),
     ))
 
@@ -66,6 +67,21 @@ class Reseeder (object):
 
 
     ## Handlers
+
+    # SU3, v2
+    def handle_get_su3 (self, request):
+        if os.path.isdir(os.path.join(self.netdb_path,'..','su3netDb')):
+            selectedNum = binascii.crc32(hashlib.sha256(request.remote_addr).digest()) % 50
+            selSU3File = os.path.join(self.netdb_path,'..','su3netDb',str(selectedNum)+'.su3')
+            print selSU3File
+            if os.path.isfile(selSU3File):
+                res = Response (wrap_file(request.environ, open(selSU3File, 'rb')),content_type = 'application/octet-stream',direct_passthrough = True)
+                res.headers.add ('Content-Length', os.path.getsize (selSU3File))
+                return res
+            else:
+                return Response('v2 not supported 1',status=404)
+        else:
+            return Response('v2 not supported 2',status=404)
 
     # @todo ETag?
     def handle_get_file (self, request, b64hash):
