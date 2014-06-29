@@ -1,0 +1,34 @@
+#
+# This is a configuration file for the reseed service
+#
+
+# Please add import-netdb.sh to crontab after configuring this file
+# Example:
+# $ (crontab -l ; echo @daily /path/to/import-netdb.sh) | crontab 
+
+# Howto create a reseed keypair:
+#
+# OpenSSL (For the webserver) example:
+# openssl req -x509 -newkey rsa:4096 -keyout server.key.pem -out server.cert.pem -days 3650
+#
+# SU3 File signing example:
+# java -cp /opt/i2p/lib/i2p.jar net.i2p.crypto.SU3File keygen -t6 public.reseed.key keystoreReseed.ks meeh@mail.i2p
+#
+
+# Make sure this always is 0 in production environments!
+DEBUG=0
+
+#
+# NETDB is per default set by import-netdb.sh to read from a unix user named i2p's home (example; /home/i2p/.i2p/netDb)
+# You can override it here if your configuration is different, or you're running i2p as a different user
+#
+# NETDB = /path/to/i2p/.netDb
+
+# Make those variables match your environment
+
+I2PLIBJAR=/opt/i2p/lib/i2p.jar
+KEYSTORE=/secret/path/reseedKeystore.ks
+SIGNER="meeh@mail.i2p"
+PASSWORD="you_wish;)"
+
+
