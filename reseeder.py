@@ -79,9 +79,9 @@ class Reseeder (object):
                 res.headers.add ('Content-Length', os.path.getsize (selSU3File))
                 return res
             else:
-                return Response('v2 not supported 1',status=404)
+                return Response('v2 not supported',status=404)
         else:
-            return Response('v2 not supported 2',status=404)
+            return Response('v2 not supported',status=404)
 
     # @todo ETag?
     def handle_get_file (self, request, b64hash):
