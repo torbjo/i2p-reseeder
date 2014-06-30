@@ -17,6 +17,8 @@ Run `apt-get install python-werkzeug` or `pip install werkzeug`.
 
 This is tested with Python 2.7 and Werkzeug 0.9.4.
 
+The master/default branch is currently maintained by https://github.com/mikalv / https://github.com/meeh420.
+
 
 ## INSTALL ##
 
