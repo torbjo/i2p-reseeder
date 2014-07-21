@@ -48,3 +48,35 @@ This works for me:
     chgrp -R www-data netDb
     chmod -R g+rX netDb
     find netDb/ -type d | xargs chmod g+s
+
+
+## Creation of SU3 keys ##
+
+The tool help menu looks like this:
+```
+$ java -cp /Applications/i2p/lib/i2p.jar net.i2p.crypto.SU3File
+Usage: SU3File keygen       [-t type|code] publicKeyFile keystore.ks you@mail.i2p
+       SU3File sign         [-c type|code] [-t type|code] inputFile.zip signedFile.su3 keystore.ks version you@mail.i2p
+       SU3File bulksign     [-c type|code] [-t type|code] directory keystore.ks version you@mail.i2p
+       SU3File showversion  signedFile.su3
+       SU3File verifysig    signedFile.su3
+       SU3File extract      signedFile.su3 outFile.zip
+Available signature types (-t):
+      DSA_SHA1  (code: 0) DEFAULT
+      ECDSA_SHA256_P256 (code: 1)
+      ECDSA_SHA384_P384 (code: 2)
+      ECDSA_SHA512_P521 (code: 3)
+      RSA_SHA256_2048   (code: 4)
+      RSA_SHA384_3072   (code: 5)
+      RSA_SHA512_4096   (code: 6)
+Available content types (-c):
+      UNKNOWN   (code: 0) DEFAULT
+      ROUTER    (code: 1)
+      PLUGIN    (code: 2)
+      RESEED    (code: 3)
+```
+
+Example for creating a key:
+
+$ java -cp /Applications/i2p/lib/i2p.jar net.i2p.crypto.SU3File keygen -t 6 reseed.pub-key.pem sindu.reseed-keystore.ks jesus@mail.i2p
+
