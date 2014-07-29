@@ -1,6 +1,6 @@
 # Use this to generate apache.conf from apache.conf.in
 
-#DOMAIN=i2p-netdb.innovatio.no
+#DOMAIN=example.com
 PREFIX=/srv/www/$(DOMAIN)
 
 all: apache.conf
