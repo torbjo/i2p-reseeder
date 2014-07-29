@@ -78,5 +78,5 @@ Available content types (-c):
 
 Example for creating a key:
 
-$ java -cp /Applications/i2p/lib/i2p.jar net.i2p.crypto.SU3File keygen -t 6 reseed.pub-key.pem sindu.reseed-keystore.ks your-email-address@whatever.i2porg
+$ java -cp /Applications/i2p/lib/i2p.jar net.i2p.crypto.SU3File keygen -t 6 reseed.pub-key.pem reseed-keystore.ks your-email-address@whatever.i2porg
 
