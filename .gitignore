@@ -5,3 +5,5 @@
 /logs
 /netDb/*
 /su3netDb/*
+
+/apache/apache.conf

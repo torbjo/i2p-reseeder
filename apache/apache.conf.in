@@ -1,0 +1,83 @@
+# To install on a Debian system:
+# 1) Symlink this into: /etc/apache2/sites-available/
+# 2) Then do a: a2ensite <symlink-name>
+
+# Put this in your main Apache config, or just uncomment the line bellow.
+# WSGIDaemonProcess i2p-reesed processes=4 threads=8 stack-size=524288 display-name=%{GROUP}
+
+
+<VirtualHost *:80>
+    ServerName	    @DOMAIN@
+    #ServerAdmin    your@email.com
+
+    WSGIScriptAlias /   @PREFIX@/wsgi.py
+    WSGIProcessGroup    i2p-reesed
+
+    CustomLog           @PREFIX@/logs/access.log combined
+    #CustomLog		/dev/null common
+    ErrorLog            @PREFIX@/logs/error.log
+
+    # Access control (ACL)
+    <Directory @PREFIX@>
+        <Files wsgi.py>
+            Order deny,allow
+            Allow from all
+        </Files>
+    </Directory>
+
+    # This should already be your default setting
+#    <Directory />
+#       Order deny,allow
+#       Deny from all
+#    </Directory>
+</VirtualHost>
+
+
+<IfModule mod_gnutls.c>
+<VirtualHost _default_:443>
+    ServerName	    @DOMAIN@
+    #ServerAdmin    your@email.com
+
+    WSGIScriptAlias /   @PREFIX@/wsgi.py
+    WSGIProcessGroup    i2p-reesed
+
+    CustomLog           @PREFIX@/logs/access.log combined
+    ErrorLog            @PREFIX@/logs/error.log
+
+    GnuTLSEnable On
+    GnuTLSPriorities NORMAL
+    #GnuTLSPriorities NORMAL:+COMP-NULL
+    GnuTLSKeyFile           @PREFIX@/server.key
+    GnuTLSCertificateFile   @PREFIX@/server.crt
+
+    # Access control (ACL)
+    <Directory @PREFIX@>
+        <Files wsgi.py>
+            Order deny,allow
+            Allow from all
+        </Files>
+    </Directory>
+</VirtualHost>
+</IfModule>
+
+
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName	    @DOMAIN@
+    #ServerAdmin    your@email.com
+
+    WSGIScriptAlias /   @PREFIX@/wsgi.py
+    WSGIProcessGroup    i2p-reesed
+
+    CustomLog           @PREFIX@/logs/access.log combined
+    ErrorLog            @PREFIX@/logs/error.log
+
+    SSLEngine on
+    SSLCertificateFile    /etc/ssl/reseed/server.crt
+    SSLCertificateKeyFile /etc/ssl/reseed/server.key
+    # "Java optimalized ciphers"
+    SSLProtocol all -SSLv2 -SSLv3
+    SSLHonorCipherOrder on
+    SSLCipherSuite "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4 EECDH EDH+aRSA RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS"
+</VirtualHost>
+</IfModule>
