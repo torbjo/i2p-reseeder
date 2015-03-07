@@ -9,7 +9,7 @@
 # Howto create a reseed keypair:
 #
 # OpenSSL (For the webserver) example:
-# openssl req -x509 -newkey rsa:4096 -keyout server.key.pem -out server.cert.pem -days 3650
+# openssl req -x509 -newkey rsa:4096 -sha256 -keyout server.key.pem -out server.cert.pem -days 3650
 #
 # SU3 File signing example:
 # java -cp /opt/i2p/lib/i2p.jar net.i2p.crypto.SU3File keygen -t6 public.reseed.key keystoreReseed.ks meeh@mail.i2p
