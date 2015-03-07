@@ -23,7 +23,7 @@ The master/default branch is currently maintained by https://github.com/mikalv /
 ## INSTALL ##
 
 * Install all dependencies `apt-get install python-werkzeug libapache2-mod-wsgi apache2`
-* Create a SSL certificate (If you use openssl you can do; `openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650`)
+* Create a SSL certificate (If you use openssl you can do; `openssl req -x509 -newkey rsa:4096 -sha256 -keyout key.pem -out cert.pem -days 3650`)
 * Edit apache or nginx to use wsgi.py
 * Copy the prod.dist file to prod.conf and edit it so it matches your environment
 * Download the code
