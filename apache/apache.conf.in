@@ -45,7 +45,8 @@
     ErrorLog            @PREFIX@/logs/error.log
 
     GnuTLSEnable On
-    GnuTLSPriorities NORMAL
+	# http://blog.lighttpd.net/gnutls-priority-strings.html
+    GnuTLSPriorities PFS:-VERS-SSL3.0:-VERS-TLS1.0:+SHA256:-MD5:-SHA1:-3DES-CBC:-ARCFOUR-128
     #GnuTLSPriorities NORMAL:+COMP-NULL
     GnuTLSKeyFile           @PREFIX@/server.key
     GnuTLSCertificateFile   @PREFIX@/server.crt
